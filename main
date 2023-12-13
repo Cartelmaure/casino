@@ -1,0 +1,184 @@
+import pygame
+import random
+import time
+globalcash=1000
+screen_height =500
+screen_width=800
+
+screen=pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption('Jeu de Casino')
+
+first_img = pygame.image.load('machineasous_btn.png').convert_alpha()
+scnd_image= pygame.image.load('roulette_btn.png').convert_alpha()
+class Button():
+    def __init__(self,x,y,image, scale):
+        width = image.get_width()
+        height = image.get_height()
+        self.image= pygame.transform.scale(image,(int(width*scale),int(height*scale)))
+        self.rect = self.image.get_rect()
+        self.rect.topleft =(x,y)
+        self.clicked = False
+    def draw (self):
+        action= False
+
+        pos = pygame.mouse.get_pos()
+
+        if self.rect.collidepoint(pos):
+            if pygame.mouse.get_pressed()[0] ==1 and self.clicked == False:
+                self.clicked = True
+                action = True
+        if pygame.mouse.get_pressed()[0] ==0:
+            self.clicked = False
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+        return action
+sous_button = Button(100,200, first_img, 0.8)
+roulette_button = Button(300,200, scnd_image, 0.8)
+
+
+def cash_check(user):
+  user=float(input("entrez votre mise:"))
+  globalcash= globalcash - user
+  if user>cash:
+    print("vous n'avez pas assez d'argent")
+    allow_to_run= False
+  else:
+    allow_to_run= True
+  return user, allow_to_run
+run=True
+while run:
+    
+    screen.fill((202,228,241))
+    
+    if sous_button.draw():
+
+        
+        lg1=['ananas','ananas','ananas']
+        lg2=['orange','orange','orange']
+        lg3=['poire','poire','poire']
+        lg4=['pasteque','pasteque','pasteque']
+        lg5=['cerise','cerise','cerise']
+        lg6=['banane','banane','banane']
+        moneh=[]
+
+        def slot():
+          def roulette():
+            global allow_to_run
+            global user
+            if allow_to_run==False:
+              print("vous n'avez pas asses d'argent")
+            else:
+              nbran = random.randint(0,6)
+              if nbran <= 1:
+                a='ananas'
+              elif nbran <= 2:
+                a='orange'
+              elif nbran <= 3:
+                a='poire'
+              elif nbran <= 4:
+                 a='pasteque'
+              elif nbran <= 5:
+                  a='cerise'
+              elif nbran <= 6:
+                 a='banane'
+
+              return a
+
+
+            l=[]
+            for i in range (6):
+              l.append(slot())
+              print(l)
+              time.sleep(1)
+            if l==lg1 or l==lg2 or l==lg3 or l==lg4 or l==lg5 or l==lg6:
+              print("you win")
+              globalcash = cash_check(user)*2 + cash
+            else:
+              print("u lose ")
+              globalcash = cash_check(user)/2 + cash
+              print(globalcash)
+
+    elif roulette_button.draw():
+
+      jeu = True
+      def recommencer():
+        global jeu 
+        print("")
+        print("Voulez vous recommencer?")
+        print("Oui ou Non?")
+        reponse = input("")
+        if reponse == "Oui":
+          return
+        elif reponse == "Non":
+          jeu = False
+
+      while jeu == True:
+        def roulette():
+          chiffre_gagnant = random.randint(0,35)
+          print("--------[JEU DE LA ROULETTE]---------")
+          print("Vous avez ", globalcash, "euros.")
+          print("Bienvenue au jeu de la Roulette! \n Entrez une somme a parier:")
+          pari = int(input(""))
+
+          def jeu():
+            global globalcash
+            global chiffre_choisi
+            chiffre_choisi = int(input("Entrez un chiffre entre 0 et 36:"))
+            if chiffre_gagnant % 2 == 0:
+              couleur_gagnante= 0
+            else:
+              couleur_gagnante = 1
+            couleur_choisie = chiffre_choisi % 2
+
+            print("")
+            print("La bille s'arrête sur", chiffre_gagnant)
+            print("")
+            if chiffre_choisi == chiffre_gagnant:
+              print("Bravo! vous êtes tombé sur la bille gagnante!")
+              globalcash = globalcash + pari * 10
+              print("Votre porte-monnaie a maintenant une valeur de", globalcash, "€")
+              print("")
+            else:
+              print("Dommage! Vous n'avez pas tombé sur la bille gagnante!")
+              print("Votre porte-monnaie a maintenant une valeur de", globalcash, "€")
+              print("")
+
+            if couleur_choisie == couleur_gagnante:
+              print("Bravo! vous êtes tombé sur la couleur gagnante!")
+              globalcash = globalcash + pari * 1.2
+              print("Votre porte-monnaie a maintenant une valeur de", globalcash, "€")
+              print("")
+            else:
+              print("Dommage! Vous n'êtes pas tombé sur la bonne couleur!")
+              print("")
+            return
+
+          def debut():
+            global globalcash
+            if pari > globalcash:
+              print("Vous n'avez pas assez d'argent. Veuillez rentrer une somme inferieure a", globalcash)
+              print("")
+              return 
+            else: 
+              globalcash = globalcash - pari
+              jeu()
+              return globalcash
+
+          debut()
+
+
+
+
+
+          return
+
+        roulette()
+        recommencer()
+      if jeu == False:
+        print("Merci d'avoir joué!")
+        print("Votre solde est de", globalcash, "€")
+
+    for event in pygame.event.get():
+        if event.type ==pygame.QUIT:
+            run=False
+    pygame.display.update()
+pygame.quit()
